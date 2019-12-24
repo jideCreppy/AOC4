@@ -167,7 +167,7 @@ class VenusFuelDepot
      */
     public function part_two($start = 254032, $end = 789860)
     {
-        $part_two_results = [];
+        $result = [];
         if (!$this->validator($start, $end)) {
             die('Invalid entry');
         }
@@ -178,11 +178,11 @@ class VenusFuelDepot
                 continue;
             } else if ($this->checkAdjacentValues($i)) {
                 if ($this->checkGroupMatchingDigits($i)) {
-                    $part_two_results[] = $this->checkGroupMatchingDigits($i);
+                    $result[] = $this->checkGroupMatchingDigits($i);
                 }
             }
         }
-        return "Part Two = " . count($part_two_results);  // Default Result 670
+        return "Part Two = " . count($result);  // Default Result 670
     }
 }
 
