@@ -4,7 +4,10 @@ namespace APP;
 
 class VenusFuelDepot
 {
-    function __construct()
+    public $password_range_start;
+    public $password_range_end;
+
+    function __construct($startRange = 254032, $endRange = 789860)
     {
         $this->passwordLength = 6;
     }
@@ -15,11 +18,13 @@ class VenusFuelDepot
      * @param $password
      * @return bool
      */
-    public function validatePassword($password): bool
+    public function validatePassword($start, $end)
     {
-
-        return (is_int($password) == "integer" and strlen($password) == $this->passwordLength) ? true : false;
-        
+        if ((is_numeric($start) && strlen($start) == $this->passwordLength) && (is_numeric($end) && strlen($end) == $this->passwordLength)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 
@@ -33,16 +38,15 @@ class VenusFuelDepot
      */
     public function checkInputPasswordRange($password, $start, $end)
     {
-
         return filter_var($password, FILTER_VALIDATE_INT,
             [
                 'options' => [
+                    'default' => false,
                     'min_range' => $start,
                     'max_range' => $end
                 ]
             ]
         );
-
     }
 
     /**
@@ -54,20 +58,18 @@ class VenusFuelDepot
      */
     public function CheckDigitIncrements($password)
     {
-
-        $arrayPasswordDigits = str_split((string)$password);
+        $arrayPasswordDigits = str_split((string) $password);
         $arrayPasswordKeys = array_keys($arrayPasswordDigits);
-        foreach ($arrayPasswordDigits as $key => $digit) {
-            $next = (int)next($arrayPasswordDigits);
-            $digit = (int)$digit;
-            if ((int)end($arrayPasswordKeys) == $key) {
+
+        foreach ($arrayPasswordDigits as $key => $value) {
+
+            if ((int) end($arrayPasswordKeys) == $key) {
                 break;
-            } else if ($next < $digit) {
+            } else if ((int)next($arrayPasswordDigits) < (int) $value) {
                 return false;
             }
         }
         return $password;
-
     }
 
     /**
@@ -78,20 +80,19 @@ class VenusFuelDepot
      */
     public function checkAdjacentValues($password)
     {
-
-        $arrayPasswordDigits = str_split((string)$password);
+        $arrayPasswordDigits = str_split((string) $password);
         $arrayPasswordKeys = array_keys($arrayPasswordDigits);
-        foreach ($arrayPasswordDigits as $key => $digit) {
-            $next = (int)next($arrayPasswordDigits);
-            $digit = (int)$digit;
-            if ((int)end($arrayPasswordKeys) == $key) {
+
+        foreach ($arrayPasswordDigits as $key => $value) {
+
+            if ((int) end($arrayPasswordKeys) == $key) {
                 break;
-            } else if ((int)$next == (int)$digit) {
+            } else if ((int)next($arrayPasswordDigits) == (int)$value) {
                 return $password;
             }
+
         }
         return false;
-
     }
 
 
@@ -104,59 +105,99 @@ class VenusFuelDepot
      */
     public function checkGroupMatchingDigits($password)
     {
-
-        $arrayPasswordDigits = str_split((string)$password);
+        $arrayPasswordDigits = str_split((string) $password);
         for ($i = 0; $i < count($arrayPasswordDigits); $i++) {
-            $digit = $arrayPasswordDigits[$i];
-            if (substr_count($password, $digit) == 2) {
+            if (substr_count($password, $arrayPasswordDigits[$i]) == 2) {
                 return $password;
             }
         }
         return false;
-
-    }
-}
-
-
-/*============================
-           PART 1
-==============================*/
-
-$password_range_start = 254032;
-$password_range_end = 789860;
-$vfd = new VenusFuelDepot();
-
-for ($i = $password_range_start; $i <= $password_range_end; $i++) {
-
-    if (!$vfd->checkInputPasswordRange($i, $password_range_start, $password_range_end)) {
-        die('Your input is outside$password_range_start and end range');
-    } else if (!$vfd->validatePassword($i)) {
-        die('You entered an invalid password. Password must be a six digit number');
-    } else if (!$vfd->CheckDigitIncrements($i)) {
-        continue;
-    } else if ($vfd->checkAdjacentValues($i)) {
-        $part_one_results[] = $vfd->checkAdjacentValues($i);
     }
 
-}
-echo "\n\nPart 1 = " . count($part_one_results) . "\n\n"; // Answer =  1033
-
-/*============================
-           PART 2
-==============================*/
-for ($i = $password_range_start; $i <= $password_range_end; $i++) {
-
-    if (!$vfd->checkInputPasswordRange($i, $password_range_start, $password_range_end)) {
-        die('Your input is outside start and end range');
-    } else if (!$vfd->validatePassword($i)) {
-        die('You entered an invalid password. Password must be a six digit number');
-    } else if (!$vfd->CheckDigitIncrements($i)) {
-        continue;
-    } else if ($vfd->checkAdjacentValues($i)) {
-        if ($vfd->checkGroupMatchingDigits($i)) {
-            $part_two_results[] = $vfd->checkGroupMatchingDigits($i);
+    /**
+     * Validate inputs to ensure the user enters the
+     * correct start and end range
+     *
+     * @param $start
+     * @param $end
+     * @return bool
+     */
+    public function validator($start = 254032, $end = 789860)
+    {
+        if ($start > $end) {
+            return false;
+        } else if (!$this->validatePassword($start, $end)) {
+            return false;
+        } else {
+            return true;
         }
     }
 
+    /**
+     * Execute Part one of the challenge
+     *
+     * @param $start
+     * @param $end
+     * @return string
+     */
+    public function part_one($start = 254032, $end = 789860)
+    {
+        $result = [];
+        if (!$this->validator($start, $end)) {
+            die('Invalid entry');
+        }
+        for ($i = $start; $i <= $end; $i++) {
+            if (!$this->checkInputPasswordRange($i, $start, $end)) {
+                die('Your input is outside the start range');
+            } else if (!$this->CheckDigitIncrements($i)) {
+                continue;
+            } else if ($this->checkAdjacentValues($i)) {
+                $result[] = $this->checkAdjacentValues($i);
+            }
+        }
+        return "Part One = " . count($result); // Default Result =  1033
+    }
+
+    /**
+     * Execute Part Two of the challenge
+     *
+     * @param $start
+     * @param $end
+     * @return string
+     */
+    public function part_two($start = 254032, $end = 789860)
+    {
+        $part_two_results = [];
+        if (!$this->validator($start, $end)) {
+            die('Invalid entry');
+        }
+        for ($i = $start; $i <= $end; $i++) {
+            if (!$this->checkInputPasswordRange($i, $start, $end)) {
+                die('Your input is outside start and end range');
+            } else if (!$this->CheckDigitIncrements($i)) {
+                continue;
+            } else if ($this->checkAdjacentValues($i)) {
+                if ($this->checkGroupMatchingDigits($i)) {
+                    $part_two_results[] = $this->checkGroupMatchingDigits($i);
+                }
+            }
+        }
+        return "Part Two = " . count($part_two_results);  // Default Result 670
+    }
 }
-echo "\n\nPart 2 = " . count($part_two_results) . "\n\n";  // Answer 670
+
+/**==============================================================
+ *        Uncomment the code below to execute this file only
+ *         Range = 254032 - 789860
+ * ================================================================*/
+// $startRange = 254032;
+// $endRange = 789860;
+// $vfd = new VenusFuelDepot();
+// echo "\n".$vfd->part_one(254032, 789860)."\n";
+// echo "\n".$vfd->part_two(254032, 789860)."\n";
+
+
+
+
+
+

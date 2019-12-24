@@ -34,13 +34,13 @@ class VenusFuelDepotTests extends TestCase
      * @param $password
      * @param $expected
      */
-    public function testValidatePassword($password, $expected)
+    public function testValidatePassword($start, $end, $expected)
     {
-        $output = $this->VenusFuelDepot->validatePassword($password);
+        $output = $this->VenusFuelDepot->validatePassword($start, $end);
         $this->assertEquals(
             $expected,
             $output,
-            'When validated, correct passwords will return true'
+            'When validation is performed on passwords the correct password entry will return true'
         );
     }
 
@@ -54,10 +54,10 @@ class VenusFuelDepotTests extends TestCase
     public function provideValidatePassword()
     {
         return [
-            [123456, true],
-            ["123456", false],
-            [1234567, false],
-            [654321, true]
+            [123456, 234567, true],
+            ["123457", 234567, true],
+            ["12345v", 234567, false],
+            ['asdfgh', 'asdfgh', false]
         ];
     }
 
@@ -72,7 +72,6 @@ class VenusFuelDepotTests extends TestCase
     {
         $inputRangeStart = 1;
         $inputRangeEnd = 10;
-
         $output = $this->VenusFuelDepot->checkInputPasswordRange($password, $inputRangeStart, $inputRangeEnd);
         $this->assertEquals(
             $expected,
@@ -108,11 +107,10 @@ class VenusFuelDepotTests extends TestCase
     public function testCheckAdjacentValues($password, $expected)
     {
         $output = $this->VenusFuelDepot->checkAdjacentValues($password);
-
         $this->assertEquals(
             $expected,
             $output,
-            "When the {$password} input contains two adjacent values return {$password} else return false"
+            "When the {$password} input contains two adjacent values return {$password}"
         );
     }
 
@@ -147,7 +145,7 @@ class VenusFuelDepotTests extends TestCase
         $this->assertEquals(
             $expected,
             $output,
-            "When the {$password} contains like or incremental digits return {$password}"
+            "When the {$password} contains same or incremental digits return {$password}"
         );
     }
 
@@ -179,11 +177,10 @@ class VenusFuelDepotTests extends TestCase
     public function testCheckGroupMatchingDigits($password, $expected)
     {
         $output = $this->VenusFuelDepot->checkGroupMatchingDigits($password);
-
         $this->assertEquals(
             $expected,
             $output,
-            'When a password is entered, there cannot be 3 adjacent matching numbers'
+            'When a password is checked exclude those with 3 adjacent matching numbers'
         );
     }
 
@@ -202,6 +199,35 @@ class VenusFuelDepotTests extends TestCase
             [123445, 123445],
             [111222, false],
             [111122, 111122]
+        ];
+    }
+
+    /**
+     * Ensure the user enters the current rnage values
+     * @dataProvider provideValidator
+     * @param $input
+     * @param $expected
+     */
+    public function testValidator($input, $expected)
+    {
+        $output = $this->VenusFuelDepot->validator($input[0], $input[1]);
+        $this->assertEquals($expected, $output, 'Failed input validation');
+    }
+
+    /**
+     * Data provider to run multiple test scenarios
+     * for password validation
+     * matching group.
+     * @return array
+     */
+    public function provideValidator()
+    {
+        return [
+            [[111111, 234567], true],
+            [[222222, 111111], false],
+            [["12345v", 234567], false],
+            [[123456, "12345b"], false],
+            [['asdfgh', 'asdfgh'], false]
         ];
     }
 }
