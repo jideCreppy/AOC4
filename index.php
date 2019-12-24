@@ -32,7 +32,8 @@ use APP\VenusFuelDepot;
         margin-left:10px; 
         font-weight:700;
         font-family: Itim;
-        font-size:20px
+        font-size:20px;
+        max-width:60%;
     }
 
     .section .container {
@@ -42,7 +43,7 @@ use APP\VenusFuelDepot;
     }
 
     .container .card {
-        width:40%; 
+        min-width: 400px;
         font-family: Itim
     }
 
@@ -66,7 +67,7 @@ use APP\VenusFuelDepot;
     <div class="container is-fluid">
         <nav class="navbar" role="navigation" aria-label="main navigation">
             <div class="navbar-brand">
-                <a class="navbar-item" href="">
+                <a class="navbar-item" href="https://github.com/jideCreppy/AOC4" target="__blank">
                     <h1>
                         ADVENT OF CODE: 04/12/2019 (Jide Creppy)
                     </h1>
