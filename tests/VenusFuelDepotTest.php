@@ -230,4 +230,46 @@ class VenusFuelDepotTests extends TestCase
             [['asdfgh', 'asdfgh'], false]
         ];
     }
+
+    /**
+     * Stub to test execution of challange one
+     */
+    public function testPartOne()
+    {
+        $input = ["start" => 254032, "end" => 789860];
+        $stub_part_one = $this->getMockBuilder('APP\VenusFuelDepot')
+            ->setMethods(['part_one'])
+            ->getMock();
+        $stub_part_one->method('part_one')
+            ->with($input['start'], $input['end'])
+            ->will($this->returnValue('Part One = 1033'));
+        $output = $stub_part_one->part_one($input['start'], $input['end']);
+
+        $this->assertEquals(
+            'Part One = 1033',
+            $output,
+            'With 254032 as the start range and 789860 as the end range the final result will be 1033'
+        );
+    }
+
+    /**
+     * Stub to test execution of challange two
+     */
+    public function testPartTwo()
+    {
+        $input = ["start" => 254032, "end" => 789860];
+        $stub_part_two = $this->getMockBuilder('APP\VenusFuelDepot')
+            ->setMethods(['part_two'])
+            ->getMock();
+        $stub_part_two->method('part_two')
+            ->with($input['start'], $input['end'])
+            ->will($this->returnValue('Part Two = 670'));
+        $output = $stub_part_two->part_two($input['start'], $input['end']);
+        
+        $this->assertEquals(
+            'Part Two = 670',
+            $output,
+            'With 254032 as the start range and 789860 as the end range the final result will be 670'
+        );
+    }
 }

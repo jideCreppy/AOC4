@@ -136,6 +136,7 @@ class VenusFuelDepot
     /**
      * Execute Part one of the challenge
      *
+     * @codeCoverageIgnore
      * @param $start
      * @param $end
      * @return string
@@ -161,6 +162,7 @@ class VenusFuelDepot
     /**
      * Execute Part Two of the challenge
      *
+     * @codeCoverageIgnore
      * @param $start
      * @param $end
      * @return string

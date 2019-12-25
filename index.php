@@ -99,7 +99,7 @@ use APP\VenusFuelDepot;
                                 <p class="help">Range End - <strong>789860</strong></p>
                             </div>
                             <div class="field">
-                                <button type="submit" name="submit" class="button is-info">Normal</button>
+                                <button type="submit" name="submit" class="button is-info">Submit</button>
                             </div>
                         </form>
                             <?php
